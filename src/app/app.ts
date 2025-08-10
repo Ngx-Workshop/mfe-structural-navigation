@@ -1,0 +1,128 @@
+import { AsyncPipe, KeyValuePipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { MatIcon } from '@angular/material/icon';
+import { RouterModule } from '@angular/router';
+import { of } from 'rxjs';
+
+export interface Sections {
+  [key: string]: Section;
+}
+export interface Section {
+  _id: string;
+  sectionTitle: string;
+  menuSvgPath: string;
+  headerSvgPath: string;
+}
+
+const mockSections: Sections = {
+  angular: {
+    _id: 'angular',
+    sectionTitle: 'Angular',
+    menuSvgPath: 'angular_white_logomark',
+    headerSvgPath:
+      'https://res.cloudinary.com/dowdpiikk/image/upload/v1710120956/angular_nav_gradient_small_mzk3iz.gif',
+  },
+  nestjs: {
+    _id: 'nestjs',
+    sectionTitle: 'Nest JS',
+    menuSvgPath: 'nestjs_white_logomark',
+    headerSvgPath:
+      'https://res.cloudinary.com/dowdpiikk/image/upload/v1710120956/nestjs_zlsdwn.svg',
+  },
+  rxjs: {
+    _id: 'rxjs',
+    sectionTitle: 'RxJS',
+    menuSvgPath: 'rxjs_white_logomark',
+    headerSvgPath:
+      'https://res.cloudinary.com/dowdpiikk/image/upload/v1710120956/rxjs_x95bjp.svg',
+  },
+};
+
+@Component({
+  selector: 'ngx-navigation-mfe',
+  imports: [AsyncPipe, MatIcon, KeyValuePipe, RouterModule],
+  template: `
+    @if(sections$ | async; as sections) {
+    <nav
+      class="navbar-header mat-elevation-z6 docs-navbar-hide-small"
+    >
+      <a routerLink="'/'" class="workshop-logo docs-button">
+        <mat-icon>tips_and_updates</mat-icon>
+        <p>Ngx-Workshop</p>
+      </a>
+
+      @for(section of sections | keyvalue; track section.key) {
+      <a
+        class="docs-button"
+        [routerLink]="'/sidenav/workshops/' + section.key"
+        routerLinkActive="navbar-menu-item-selected"
+      >
+        <mat-icon
+          class="section-logo"
+          [svgIcon]="section.value.menuSvgPath"
+        ></mat-icon>
+        <p>{{ section.value.sectionTitle }}</p>
+      </a>
+      }
+    </nav>
+    }
+  `,
+  styles: [
+    `
+      :host {
+        position: fixed;
+        left: 0;
+        right: 0;
+        z-index: 2;
+        width: 110px;
+      }
+      .navbar-header {
+        display: flex;
+        height: 100svh;
+        flex-wrap: wrap;
+        align-items: center;
+        flex-direction: column;
+        color: var(--mat-sys-on-primary-container);
+        background-color: var(--mat-sys-primary-container);
+        .docs-button {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          padding-block: 1.25rem;
+          text-decoration: none;
+          color: inherit;
+          cursor: pointer;
+          transition: fill 0.3s ease;
+          &.navbar-menu-item-selected {
+            color: var(--mat-sys-primary-container);
+            background-color: var(--mat-sys-on-primary-container);
+          }
+        }
+      }
+      .workshop-logo {
+        font-weight: 300;
+        font-size: 0.9rem;
+        margin: 0;
+        mat-icon {
+          font-size: 3.18rem;
+          width: 50px;
+          height: 50px;
+          vertical-align: middle;
+        }
+      }
+      .section-logo {
+        width: 36px;
+        height: 36px;
+      }
+    `,
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class App {
+  sections$ = of(mockSections);
+}
+
+// 👇 **IMPORTANT FOR DYMANIC LOADING**
+export default App;
