@@ -46,7 +46,7 @@ const mockSections: Sections = {
     <nav
       class="navbar-header mat-elevation-z6 docs-navbar-hide-small"
     >
-      <a routerLink="'/'" class="workshop-logo docs-button">
+      <a [routerLink]="'/'" class="workshop-logo docs-button">
         <mat-icon>tips_and_updates</mat-icon>
         <p>Ngx-Workshop</p>
       </a>
@@ -70,22 +70,20 @@ const mockSections: Sections = {
   styles: [
     `
       :host {
-        position: fixed;
-        left: 0;
-        right: 0;
-        z-index: 2;
-        width: 110px;
+        display: block;
+        inline-size: 110px; /* width of the left rail column */
+        block-size: 100dvh; /* fill the shell's left column */
       }
       .navbar-header {
         display: flex;
-        height: 100svh;
+        block-size: 100%;
         flex-wrap: wrap;
         align-items: center;
         flex-direction: column;
         color: var(--mat-sys-on-primary-container);
         background-color: var(--mat-sys-primary-container);
         .docs-button {
-          width: 100%;
+          inline-size: 100%;
           display: flex;
           flex-direction: column;
           justify-content: center;
@@ -107,14 +105,14 @@ const mockSections: Sections = {
         margin: 0;
         mat-icon {
           font-size: 3.18rem;
-          width: 50px;
-          height: 50px;
+          inline-size: 50px;
+          block-size: 50px;
           vertical-align: middle;
         }
       }
       .section-logo {
-        width: 36px;
-        height: 36px;
+        inline-size: 36px;
+        block-size: 36px;
       }
     `,
   ],
