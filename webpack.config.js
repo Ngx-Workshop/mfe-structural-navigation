@@ -5,6 +5,7 @@ const {
 
 module.exports = withModuleFederationPlugin({
   name: 'ngx-navigation-mfe',
+  filename: 'remoteEntry.js',
 
   exposes: {
     './Component': './src/app/app.ts',
