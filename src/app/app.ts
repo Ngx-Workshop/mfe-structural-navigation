@@ -1,4 +1,4 @@
-import { AsyncPipe, KeyValuePipe } from '@angular/common';
+import { AsyncPipe, KeyValuePipe, NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
@@ -18,21 +18,21 @@ const mockSections: Sections = {
   angular: {
     _id: 'angular',
     sectionTitle: 'Angular',
-    menuSvgPath: 'angular_white_logomark',
+    menuSvgPath: 'devicon-angular-plain',
     headerSvgPath:
       'https://res.cloudinary.com/dowdpiikk/image/upload/v1710120956/angular_nav_gradient_small_mzk3iz.gif',
   },
   nestjs: {
     _id: 'nestjs',
     sectionTitle: 'Nest JS',
-    menuSvgPath: 'nestjs_white_logomark',
+    menuSvgPath: 'devicon-nestjs-original',
     headerSvgPath:
       'https://res.cloudinary.com/dowdpiikk/image/upload/v1710120956/nestjs_zlsdwn.svg',
   },
   rxjs: {
     _id: 'rxjs',
     sectionTitle: 'RxJS',
-    menuSvgPath: 'rxjs_white_logomark',
+    menuSvgPath: 'devicon-rxjs-plain',
     headerSvgPath:
       'https://res.cloudinary.com/dowdpiikk/image/upload/v1710120956/rxjs_x95bjp.svg',
   },
@@ -40,7 +40,7 @@ const mockSections: Sections = {
 
 @Component({
   selector: 'ngx-navigation-mfe',
-  imports: [AsyncPipe, MatIcon, KeyValuePipe, RouterModule],
+  imports: [AsyncPipe, MatIcon, KeyValuePipe, RouterModule, NgClass],
   template: `
     @if(sections$ | async; as sections) {
     <nav
@@ -48,7 +48,7 @@ const mockSections: Sections = {
     >
       <a [routerLink]="'/'" class="workshop-logo docs-button">
         <mat-icon>tips_and_updates</mat-icon>
-        <p>Ngx-Workshop</p>
+        <p>Ngx Workshop</p>
       </a>
 
       @for(section of sections | keyvalue; track section.key) {
@@ -57,10 +57,10 @@ const mockSections: Sections = {
         [routerLink]="'/sidenav/workshops/' + section.key"
         routerLinkActive="navbar-menu-item-selected"
       >
-        <mat-icon
+        <i
           class="section-logo"
-          [svgIcon]="section.value.menuSvgPath"
-        ></mat-icon>
+          [ngClass]="section.value.menuSvgPath"
+        ></i>
         <p>{{ section.value.sectionTitle }}</p>
       </a>
       }
@@ -111,8 +111,7 @@ const mockSections: Sections = {
         }
       }
       .section-logo {
-        inline-size: 36px;
-        block-size: 36px;
+        font-size: 1.75rem;
       }
     `,
   ],
