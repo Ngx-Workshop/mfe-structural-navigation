@@ -1,9 +1,15 @@
 import { AsyncPipe, KeyValuePipe, NgClass } from '@angular/common';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  input,
+} from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import { NgxThemePicker } from '@tmdjr/ngx-theme-picker';
 import { of } from 'rxjs';
+
+import type { StructuralNavOverrideMode } from '@tmdjr/ngx-mfe-orchestrator-contracts';
 
 export interface Sections {
   [key: string]: Section;
@@ -50,7 +56,7 @@ const mockSections: Sections = {
     NgxThemePicker,
   ],
   template: `
-    @if(sections$ | async; as sections) {
+    @if(mode() != 'disabled') { @if(sections$ | async; as sections) {
     <nav
       class="navbar-header mat-elevation-z6 docs-navbar-hide-small"
     >
@@ -75,7 +81,7 @@ const mockSections: Sections = {
       <div class="flex-spacer"></div>
       <ngx-theme-picker></ngx-theme-picker>
     </nav>
-    }
+    } }
   `,
   styles: [
     `
@@ -129,6 +135,7 @@ const mockSections: Sections = {
 })
 export class App {
   sections$ = of(mockSections);
+  mode = input<StructuralNavOverrideMode>('verbose');
 }
 
 // 👇 **IMPORTANT FOR DYMANIC LOADING**
