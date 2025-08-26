@@ -79,7 +79,7 @@ const mockSections: Sections = {
       </a>
       }
       <div class="flex-spacer"></div>
-      <ngx-theme-picker></ngx-theme-picker>
+      <ngx-theme-picker class="docs-button"></ngx-theme-picker>
     </nav>
     } }
   `,
