@@ -2,6 +2,7 @@ import { AsyncPipe, KeyValuePipe, NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
+import { NgxThemePicker } from '@tmdjr/ngx-theme-picker';
 import { of } from 'rxjs';
 
 export interface Sections {
@@ -40,7 +41,14 @@ const mockSections: Sections = {
 
 @Component({
   selector: 'ngx-navigation-mfe',
-  imports: [AsyncPipe, MatIcon, KeyValuePipe, RouterModule, NgClass],
+  imports: [
+    AsyncPipe,
+    MatIcon,
+    KeyValuePipe,
+    RouterModule,
+    NgClass,
+    NgxThemePicker,
+  ],
   template: `
     @if(sections$ | async; as sections) {
     <nav
@@ -64,6 +72,8 @@ const mockSections: Sections = {
         <p>{{ section.value.sectionTitle }}</p>
       </a>
       }
+      <div class="flex-spacer"></div>
+      <ngx-theme-picker></ngx-theme-picker>
     </nav>
     }
   `,
