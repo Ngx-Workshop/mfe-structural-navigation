@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ngx-navigation-mfe": {
+    "mfe-structural-navigation": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -30,7 +30,7 @@
             ],
             "styles": ["src/styles.scss"],
             "main": "src/main.ts",
-            "outputPath": "dist/ngx-navigation-mfe",
+            "outputPath": "dist/mfe-structural-navigation",
             "index": "src/index.html",
             "extraWebpackConfig": "webpack.config.js",
             "commonChunk": false
@@ -64,11 +64,11 @@
           "builder": "ngx-build-plus:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "ngx-navigation-mfe:build:production",
+              "buildTarget": "mfe-structural-navigation:build:production",
               "extraWebpackConfig": "webpack.prod.config.js"
             },
             "development": {
-              "buildTarget": "ngx-navigation-mfe:build:development"
+              "buildTarget": "mfe-structural-navigation:build:development"
             }
           },
           "defaultConfiguration": "development",

@@ -1,4 +1,4 @@
-name: Deploy Ngx-Navigation-MFE to DO Droplet
+name: Deploy MFE Structural Navigation to DO Droplet
 
 on:
   push:
@@ -29,8 +29,8 @@ jobs:
           host: ${{ secrets.DROPLET_IP }}
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: 'dist/ngx-navigation-mfe/*'
-          target: '/opt/ngx-angular-shell/remotes/ngx-navigation-mfe/'
+          source: 'dist/mfe-structural-navigation/*'
+          target: '/opt/mfe-remotes/mfe-structural-navigation/'
           strip_components: 2
 
       - name: SSH and reload Nginx (optional)
