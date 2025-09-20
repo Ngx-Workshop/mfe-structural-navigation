@@ -135,7 +135,7 @@ const mockSections: Sections = {
 })
 export class App {
   sections$ = of(mockSections);
-  mode = input<StructuralNavOverrideMode>('verbose');
+  mode = input<StructuralNavOverrideMode>('disabled');
 }
 
 // 👇 **IMPORTANT FOR DYMANIC LOADING**
