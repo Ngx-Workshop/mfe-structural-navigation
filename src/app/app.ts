@@ -1,16 +1,21 @@
+import {
+  ConnectedPosition,
+  OverlayModule,
+} from '@angular/cdk/overlay';
 import { AsyncPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   inject,
   Input,
+  ViewEncapsulation,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
 import { RouterModule } from '@angular/router';
 import type { StructuralOverrideMode } from '@tmdjr/ngx-mfe-orchestrator-contracts';
 import {
+  HierarchicalMenuItem,
   NgxNavigationalListService,
   StructuralSubtype,
 } from '@tmdjr/ngx-navigational-list';
@@ -22,111 +27,84 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
-
-export interface Sections {
-  [key: string]: Section;
-}
-export interface Section {
-  _id: string;
-  sectionTitle: string;
-  menuSvgPath: string;
-  headerSvgPath: string;
-}
-
-const mockSections: Sections = {
-  angular: {
-    _id: 'angular',
-    sectionTitle: 'Angular',
-    menuSvgPath: 'devicon-angular-plain',
-    headerSvgPath:
-      'https://res.cloudinary.com/dowdpiikk/image/upload/v1710120956/angular_nav_gradient_small_mzk3iz.gif',
-  },
-  nestjs: {
-    _id: 'nestjs',
-    sectionTitle: 'Nest JS',
-    menuSvgPath: 'devicon-nestjs-original',
-    headerSvgPath:
-      'https://res.cloudinary.com/dowdpiikk/image/upload/v1710120956/nestjs_zlsdwn.svg',
-  },
-  rxjs: {
-    _id: 'rxjs',
-    sectionTitle: 'RxJS',
-    menuSvgPath: 'devicon-rxjs-plain',
-    headerSvgPath:
-      'https://res.cloudinary.com/dowdpiikk/image/upload/v1710120956/rxjs_x95bjp.svg',
-  },
-};
+import { MenuDeviconComponent } from './devicon.component';
+import { SubMenuListComponent } from './sub-menu-list.component';
 
 @Component({
   selector: 'ngx-navigation-mfe',
   imports: [
     AsyncPipe,
+    OverlayModule,
     MatIcon,
     MatButtonModule,
-    MatMenuModule,
     RouterModule,
     NgxThemePicker,
+    SubMenuListComponent,
+    MenuDeviconComponent,
   ],
+  encapsulation: ViewEncapsulation.None,
   template: `
     @if(viewModel$ | async; as vm) { @if(vm.mode != 'disabled') {
     <nav
-      class="navbar-header mat-elevation-z6 docs-navbar-hide-small"
+      class="navbar-header"
+      cdkOverlayOrigin
+      #submenuOrigin="cdkOverlayOrigin"
     >
       <a [routerLink]="'/'" class="workshop-logo docs-button">
         <mat-icon>tips_and_updates</mat-icon>
-        <p>Ngx Workshop</p>
+        <p>Ngx-Workshop</p>
       </a>
-
-      <!-- @for(section of sections | keyvalue; track section.key) {
-      <a
-        class="docs-button"
-        [routerLink]="'/sidenav/workshops/' + section.key"
-        routerLinkActive="navbar-menu-item-selected"
-      >
-        <i
-          class="section-logo"
-          [ngClass]="section.value.menuSvgPath"
-        ></i>
-        <p>{{ section.value.sectionTitle }}</p>
-      </a>
-      } -->
       @for(menuItem of vm.menuItems; track $index) {
       @if(menuItem.children && menuItem.children.length > 0) {
       <a
-        mat-button
-        [matMenuTriggerFor]="menuItemMenu$index"
         class="docs-button"
+        (click)="openSubmenu(menuItem)"
+        [attr.aria-expanded]="activeParent?._id === menuItem._id"
       >
-        <mat-icon>{{ menuItem.headerSvgPath }}</mat-icon>
-        {{ menuItem.menuItemText }}
+        <ngx-menu-devicon
+          [icon]="menuItem.navSvgPath"
+        ></ngx-menu-devicon>
+        <p>{{ menuItem.menuItemText }}</p>
       </a>
-      <mat-menu #menuItemMenu$index="matMenu" class="dense-menu">
-        @for (child of menuItem.children; track $index) {
-        <button mat-menu-item [routerLink]="['/', child.routeUrl]">
-          <mat-icon>{{ child.headerSvgPath }}</mat-icon>
-          {{ child.menuItemText }}
-        </button>
-        }
-      </mat-menu>
       } @else {
-      <a mat-button [routerLink]="['/', menuItem.routeUrl]">
-        <mat-icon>{{ menuItem.headerSvgPath }}</mat-icon>
-        {{ menuItem.menuItemText }}
+      <a class="docs-button" [routerLink]="['/', menuItem.routeUrl]">
+        <ngx-menu-devicon
+          [icon]="menuItem.navSvgPath"
+        ></ngx-menu-devicon>
+        <p>{{ menuItem.menuItemText }}</p>
       </a>
       } }
 
       <div class="flex-spacer"></div>
       <ngx-theme-picker class="docs-button"></ngx-theme-picker>
     </nav>
+
+    <ng-template
+      cdk-connected-overlay
+      [cdkConnectedOverlayOrigin]="submenuOrigin"
+      [cdkConnectedOverlayOpen]="!!activeParent"
+      [cdkConnectedOverlayHasBackdrop]="true"
+      [cdkConnectedOverlayPositions]="overlayPositions"
+      cdkConnectedOverlayPanelClass="submenu-overlay-panel"
+      [cdkConnectedOverlayBackdropClass]="'submenu-backdrop'"
+      (backdropClick)="closeSubmenu()"
+    >
+      <ngx-sub-menu-list
+        [parent]="activeParent"
+        (closed)="closeSubmenu()"
+        (navigated)="closeSubmenu()"
+      ></ngx-sub-menu-list>
+    </ng-template>
     } }
   `,
   styles: [
     `
-      :host {
+      ngx-navigation-mfe {
         display: block;
         inline-size: 110px; /* width of the left rail column */
         block-size: 100dvh; /* fill the shell's left column */
       }
+
       .navbar-header {
         display: flex;
         block-size: 100%;
@@ -155,16 +133,41 @@ const mockSections: Sections = {
       .workshop-logo {
         font-weight: 300;
         font-size: 0.9rem;
-        margin: 0;
         mat-icon {
           font-size: 3.18rem;
           inline-size: 50px;
           block-size: 50px;
           vertical-align: middle;
+          margin-left: 10px;
         }
       }
-      .section-logo {
-        font-size: 1.75rem;
+      .submenu-backdrop {
+        left: 110px !important;
+        inline-size: calc(100vw - 110px);
+        background: rgba(0, 0, 0, 0.32);
+      }
+      .submenu-overlay-panel {
+        display: block;
+        animation: submenu-enter 230ms
+          cubic-bezier(0.25, 0.8, 0.25, 1);
+        transform-origin: left center;
+        will-change: transform, opacity;
+      }
+      @keyframes submenu-enter {
+        from {
+          opacity: 0;
+          transform: translateX(-20%);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .submenu-overlay-panel {
+          animation: none;
+          transform: none;
+        }
       }
     `,
   ],
@@ -175,8 +178,6 @@ export class App {
   private readonly ngxNavigationalListService = inject(
     NgxNavigationalListService
   );
-
-  sections = mockSections;
 
   @Input()
   set mode(value: StructuralOverrideMode) {
@@ -192,6 +193,16 @@ export class App {
     'admin' | 'publisher' | 'regular' | 'none'
   >('none');
 
+  activeParent: HierarchicalMenuItem | null = null;
+  readonly overlayPositions: ConnectedPosition[] = [
+    {
+      originX: 'end',
+      originY: 'top',
+      overlayX: 'start',
+      overlayY: 'top',
+    },
+  ];
+
   viewModel$ = combineLatest([this.mode$, this.role$]).pipe(
     tap(([, role]) =>
       this.ngxNavigationalListService.setRoleState(role)
@@ -205,10 +216,18 @@ export class App {
             this.subtype,
             mode.toUpperCase()
           ),
-        some: this.ngxNavigationalListService.navigationData$,
       })
     )
   );
+
+  openSubmenu(menuItem: HierarchicalMenuItem): void {
+    this.activeParent =
+      this.activeParent?._id === menuItem._id ? null : menuItem;
+  }
+
+  closeSubmenu(): void {
+    this.activeParent = null;
+  }
 }
 
 // 👇 **IMPORTANT FOR DYMANIC LOADING**
