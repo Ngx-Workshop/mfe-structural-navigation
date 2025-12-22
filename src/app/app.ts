@@ -1,15 +1,27 @@
-import { AsyncPipe, KeyValuePipe, NgClass } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  input,
+  inject,
+  Input,
 } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { RouterModule } from '@angular/router';
+import type { StructuralOverrideMode } from '@tmdjr/ngx-mfe-orchestrator-contracts';
+import {
+  NgxNavigationalListService,
+  StructuralSubtype,
+} from '@tmdjr/ngx-navigational-list';
 import { NgxThemePicker } from '@tmdjr/ngx-theme-picker';
-import { of } from 'rxjs';
-
-import type { StructuralNavOverrideMode } from '@tmdjr/ngx-mfe-orchestrator-contracts';
+import {
+  BehaviorSubject,
+  combineLatest,
+  of,
+  switchMap,
+  tap,
+} from 'rxjs';
 
 export interface Sections {
   [key: string]: Section;
@@ -50,13 +62,13 @@ const mockSections: Sections = {
   imports: [
     AsyncPipe,
     MatIcon,
-    KeyValuePipe,
+    MatButtonModule,
+    MatMenuModule,
     RouterModule,
-    NgClass,
     NgxThemePicker,
   ],
   template: `
-    @if(mode() != 'disabled') { @if(sections$ | async; as sections) {
+    @if(viewModel$ | async; as vm) { @if(vm.mode != 'disabled') {
     <nav
       class="navbar-header mat-elevation-z6 docs-navbar-hide-small"
     >
@@ -65,7 +77,7 @@ const mockSections: Sections = {
         <p>Ngx Workshop</p>
       </a>
 
-      @for(section of sections | keyvalue; track section.key) {
+      <!-- @for(section of sections | keyvalue; track section.key) {
       <a
         class="docs-button"
         [routerLink]="'/sidenav/workshops/' + section.key"
@@ -77,7 +89,32 @@ const mockSections: Sections = {
         ></i>
         <p>{{ section.value.sectionTitle }}</p>
       </a>
-      }
+      } -->
+      @for(menuItem of vm.menuItems; track $index) {
+      @if(menuItem.children && menuItem.children.length > 0) {
+      <a
+        mat-button
+        [matMenuTriggerFor]="menuItemMenu$index"
+        class="docs-button"
+      >
+        <mat-icon>{{ menuItem.headerSvgPath }}</mat-icon>
+        {{ menuItem.menuItemText }}
+      </a>
+      <mat-menu #menuItemMenu$index="matMenu" class="dense-menu">
+        @for (child of menuItem.children; track $index) {
+        <button mat-menu-item [routerLink]="['/', child.routeUrl]">
+          <mat-icon>{{ child.headerSvgPath }}</mat-icon>
+          {{ child.menuItemText }}
+        </button>
+        }
+      </mat-menu>
+      } @else {
+      <a mat-button [routerLink]="['/', menuItem.routeUrl]">
+        <mat-icon>{{ menuItem.headerSvgPath }}</mat-icon>
+        {{ menuItem.menuItemText }}
+      </a>
+      } }
+
       <div class="flex-spacer"></div>
       <ngx-theme-picker class="docs-button"></ngx-theme-picker>
     </nav>
@@ -134,8 +171,44 @@ const mockSections: Sections = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
-  sections$ = of(mockSections);
-  mode = input<StructuralNavOverrideMode>('disabled');
+  private readonly subtype: StructuralSubtype = 'NAV';
+  private readonly ngxNavigationalListService = inject(
+    NgxNavigationalListService
+  );
+
+  sections = mockSections;
+
+  @Input()
+  set mode(value: StructuralOverrideMode) {
+    this.mode$.next(value);
+  }
+  mode$ = new BehaviorSubject<StructuralOverrideMode>('disabled');
+
+  @Input()
+  set role(value: 'admin' | 'publisher' | 'regular' | 'none') {
+    this.role$.next(value);
+  }
+  role$ = new BehaviorSubject<
+    'admin' | 'publisher' | 'regular' | 'none'
+  >('none');
+
+  viewModel$ = combineLatest([this.mode$, this.role$]).pipe(
+    tap(([, role]) =>
+      this.ngxNavigationalListService.setRoleState(role)
+    ),
+    switchMap(([mode, role]) =>
+      combineLatest({
+        mode: of(mode),
+        role: of(role),
+        menuItems:
+          this.ngxNavigationalListService.getFilteredNavigationBySubtypeAndState(
+            this.subtype,
+            mode.toUpperCase()
+          ),
+        some: this.ngxNavigationalListService.navigationData$,
+      })
+    )
+  );
 }
 
 // 👇 **IMPORTANT FOR DYMANIC LOADING**
