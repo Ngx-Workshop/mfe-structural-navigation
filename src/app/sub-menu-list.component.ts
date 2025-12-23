@@ -27,6 +27,7 @@ import { MenuDeviconComponent } from './devicon.component';
         <div class="submenu-title">
           <ngx-menu-devicon
             [icon]="parent.navSvgPath"
+            [large]="true"
           ></ngx-menu-devicon>
           <span class="submenu-parent-label">{{
             parent.menuItemText

@@ -6,6 +6,7 @@ import { AsyncPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  DOCUMENT,
   inject,
   Input,
   ViewEncapsulation,
@@ -50,33 +51,43 @@ import { SubMenuListComponent } from './sub-menu-list.component';
       cdkOverlayOrigin
       #submenuOrigin="cdkOverlayOrigin"
     >
-      <a [routerLink]="'/'" class="workshop-logo docs-button">
+      <a [routerLink]="'/'" class="menu-item workshop-logo">
         <mat-icon>tips_and_updates</mat-icon>
         <p>Ngx-Workshop</p>
       </a>
       @for(menuItem of vm.menuItems; track $index) {
       @if(menuItem.children && menuItem.children.length > 0) {
       <a
-        class="docs-button"
+        class="menu-item"
         (click)="openSubmenu(menuItem)"
         [attr.aria-expanded]="activeParent?._id === menuItem._id"
       >
         <ngx-menu-devicon
           [icon]="menuItem.navSvgPath"
+          [large]="true"
         ></ngx-menu-devicon>
         <p>{{ menuItem.menuItemText }}</p>
       </a>
       } @else {
-      <a class="docs-button" [routerLink]="['/', menuItem.routeUrl]">
+      <a class="menu-item" [routerLink]="['/', menuItem.routeUrl]">
         <ngx-menu-devicon
           [icon]="menuItem.navSvgPath"
+          [large]="true"
         ></ngx-menu-devicon>
         <p>{{ menuItem.menuItemText }}</p>
       </a>
       } }
 
       <div class="flex-spacer"></div>
-      <ngx-theme-picker class="docs-button"></ngx-theme-picker>
+      <ngx-theme-picker class="menu-item"></ngx-theme-picker>
+      @if(vm.role === 'none') {
+      <a
+        class="menu-item sign-in-cta"
+        mat-flat-button
+        (click)="redirectToLogin()"
+        >Sign In</a
+      >
+      }
     </nav>
 
     <ng-template
@@ -113,11 +124,9 @@ import { SubMenuListComponent } from './sub-menu-list.component';
         flex-direction: column;
         color: var(--mat-sys-on-primary-container);
         background-color: var(--mat-sys-primary-container);
-        .docs-button {
-          inline-size: 100%;
+        .menu-item {
           display: flex;
           flex-direction: column;
-          justify-content: center;
           align-items: center;
           padding-block: 1.25rem;
           text-decoration: none;
@@ -140,6 +149,9 @@ import { SubMenuListComponent } from './sub-menu-list.component';
           vertical-align: middle;
           margin-left: 10px;
         }
+      }
+      .sign-in-cta {
+        margin-bottom: 1rem;
       }
       .submenu-backdrop {
         left: 110px !important;
@@ -175,6 +187,7 @@ import { SubMenuListComponent } from './sub-menu-list.component';
 })
 export class App {
   private readonly subtype: StructuralSubtype = 'NAV';
+  private readonly doc = inject(DOCUMENT);
   private readonly ngxNavigationalListService = inject(
     NgxNavigationalListService
   );
@@ -227,6 +240,16 @@ export class App {
 
   closeSubmenu(): void {
     this.activeParent = null;
+  }
+
+  redirectToLogin(): void {
+    const href = this.doc?.defaultView?.location?.href ?? '/';
+    const redirect = encodeURIComponent(href);
+    const baseRedirectUrl = 'https://auth.ngx-workshop.io';
+    const loginUrl = baseRedirectUrl.includes('?')
+      ? `${baseRedirectUrl}&redirect=${redirect}`
+      : `${baseRedirectUrl}?redirect=${redirect}`;
+    this.doc.defaultView?.location?.assign(loginUrl);
   }
 }
 
