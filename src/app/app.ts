@@ -137,6 +137,9 @@ import { SubMenuListComponent } from './sub-menu-list.component';
             color: var(--mat-sys-primary-container);
             background-color: var(--mat-sys-on-primary-container);
           }
+          mat-icon {
+            color: var(--mat-sys-on-primary-container);
+          }
         }
       }
       .workshop-logo {
