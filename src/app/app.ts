@@ -1,7 +1,3 @@
-import {
-  ConnectedPosition,
-  OverlayModule,
-} from '@angular/cdk/overlay';
 import { AsyncPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -9,7 +5,6 @@ import {
   DOCUMENT,
   inject,
   Input,
-  ViewEncapsulation,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -29,39 +24,29 @@ import {
   tap,
 } from 'rxjs';
 import { MenuDeviconComponent } from './devicon.component';
-import { SubMenuListComponent } from './sub-menu-list.component';
+
+type UserRole = 'admin' | 'publisher' | 'regular' | 'none';
 
 @Component({
   selector: 'ngx-navigation-mfe',
   imports: [
     AsyncPipe,
-    OverlayModule,
     MatIcon,
     MatButtonModule,
     RouterModule,
     NgxThemePicker,
-    SubMenuListComponent,
     MenuDeviconComponent,
   ],
-  encapsulation: ViewEncapsulation.None,
   template: `
     @if(viewModel$ | async; as vm) { @if(vm.mode != 'disabled') {
-    <nav
-      class="navbar-header"
-      cdkOverlayOrigin
-      #submenuOrigin="cdkOverlayOrigin"
-    >
-      <a [routerLink]="'/'" class="menu-item workshop-logo">
+    <nav class="navbar-header">
+      <a [routerLink]="'/'" class="menu-item ngx-workshop-logo">
         <mat-icon>tips_and_updates</mat-icon>
         <p>Ngx-Workshop</p>
       </a>
       @for(menuItem of vm.menuItems; track $index) {
       @if(menuItem.children && menuItem.children.length > 0) {
-      <a
-        class="menu-item"
-        (click)="openSubmenu(menuItem)"
-        [attr.aria-expanded]="activeParent?._id === menuItem._id"
-      >
+      <a class="menu-item" (click)="openSubmenu(menuItem)">
         <ngx-menu-devicon
           [icon]="menuItem.navSvgPath"
           [large]="true"
@@ -82,106 +67,57 @@ import { SubMenuListComponent } from './sub-menu-list.component';
       <ngx-theme-picker class="menu-item"></ngx-theme-picker>
       @if(vm.role === 'none') {
       <a
-        class="menu-item sign-in-cta"
+        class="sign-in-cta"
         mat-flat-button
         (click)="redirectToLogin()"
         >Sign In</a
       >
       }
     </nav>
-
-    <ng-template
-      cdk-connected-overlay
-      [cdkConnectedOverlayOrigin]="submenuOrigin"
-      [cdkConnectedOverlayOpen]="!!activeParent"
-      [cdkConnectedOverlayHasBackdrop]="true"
-      [cdkConnectedOverlayPositions]="overlayPositions"
-      cdkConnectedOverlayPanelClass="submenu-overlay-panel"
-      [cdkConnectedOverlayBackdropClass]="'submenu-backdrop'"
-      (backdropClick)="closeSubmenu()"
-    >
-      <ngx-sub-menu-list
-        [parent]="activeParent"
-        (closed)="closeSubmenu()"
-        (navigated)="closeSubmenu()"
-      ></ngx-sub-menu-list>
-    </ng-template>
     } }
   `,
   styles: [
     `
-      ngx-navigation-mfe {
+      :host {
+        --nav-width: 110px;
         display: block;
-        inline-size: 110px; /* width of the left rail column */
-        block-size: 100dvh; /* fill the shell's left column */
-      }
-
-      .navbar-header {
-        display: flex;
-        block-size: 100%;
-        flex-wrap: wrap;
-        align-items: center;
-        flex-direction: column;
-        color: var(--mat-sys-on-primary-container);
-        background-color: var(--mat-sys-primary-container);
+        inline-size: var(--nav-width);
+        block-size: 100dvh;
+        position: relative;
+        .navbar-header {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          color: var(--mat-sys-on-primary-container);
+          background-color: var(--mat-sys-primary-container);
+          block-size: 100%;
+        }
+        .ngx-workshop-logo {
+          font-weight: 300;
+          font-size: 0.9rem;
+          mat-icon {
+            font-size: 3.18rem;
+            inline-size: 50px;
+            block-size: 50px;
+            vertical-align: middle;
+          }
+        }
         .menu-item {
+          cursor: pointer;
           display: flex;
           flex-direction: column;
           align-items: center;
           padding-block: 1.25rem;
           text-decoration: none;
           color: inherit;
-          cursor: pointer;
-          transition: fill 0.3s ease;
-          &.navbar-menu-item-selected {
-            color: var(--mat-sys-primary-container);
-            background-color: var(--mat-sys-on-primary-container);
-          }
-          mat-icon {
-            color: var(--mat-sys-on-primary-container);
-          }
+        }
+        .sign-in-cta {
+          margin-bottom: 1rem;
         }
       }
-      .workshop-logo {
-        font-weight: 300;
-        font-size: 0.9rem;
+      ::ng-deep ngx-theme-picker {
         mat-icon {
-          font-size: 3.18rem;
-          inline-size: 50px;
-          block-size: 50px;
-          vertical-align: middle;
-          margin-left: 10px;
-        }
-      }
-      .sign-in-cta {
-        margin-bottom: 1rem;
-      }
-      .submenu-backdrop {
-        left: 110px !important;
-        inline-size: calc(100vw - 110px);
-        background: rgba(0, 0, 0, 0.32);
-      }
-      .submenu-overlay-panel {
-        display: block;
-        animation: submenu-enter 230ms
-          cubic-bezier(0.25, 0.8, 0.25, 1);
-        transform-origin: left center;
-        will-change: transform, opacity;
-      }
-      @keyframes submenu-enter {
-        from {
-          opacity: 0;
-          transform: translateX(-20%);
-        }
-        to {
-          opacity: 1;
-          transform: translateX(0);
-        }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .submenu-overlay-panel {
-          animation: none;
-          transform: none;
+          color: var(--mat-sys-on-primary-container);
         }
       }
     `,
@@ -202,22 +138,10 @@ export class App {
   mode$ = new BehaviorSubject<StructuralOverrideMode>('disabled');
 
   @Input()
-  set role(value: 'admin' | 'publisher' | 'regular' | 'none') {
+  set role(value: UserRole) {
     this.role$.next(value);
   }
-  role$ = new BehaviorSubject<
-    'admin' | 'publisher' | 'regular' | 'none'
-  >('none');
-
-  activeParent: HierarchicalMenuItem | null = null;
-  readonly overlayPositions: ConnectedPosition[] = [
-    {
-      originX: 'end',
-      originY: 'top',
-      overlayX: 'start',
-      overlayY: 'top',
-    },
-  ];
+  role$ = new BehaviorSubject<UserRole>('none');
 
   viewModel$ = combineLatest([this.mode$, this.role$]).pipe(
     tap(([, role]) =>
@@ -237,12 +161,7 @@ export class App {
   );
 
   openSubmenu(menuItem: HierarchicalMenuItem): void {
-    this.activeParent =
-      this.activeParent?._id === menuItem._id ? null : menuItem;
-  }
-
-  closeSubmenu(): void {
-    this.activeParent = null;
+    console.log('Open submenu for', menuItem);
   }
 
   redirectToLogin(): void {
@@ -256,5 +175,4 @@ export class App {
   }
 }
 
-// 👇 **IMPORTANT FOR DYMANIC LOADING**
 export default App;
