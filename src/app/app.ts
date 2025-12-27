@@ -48,7 +48,11 @@ type UserRole = 'admin' | 'publisher' | 'regular' | 'none';
       (close)="closeSubmenu()"
     />
     <nav class="navbar-header">
-      <a [routerLink]="'/'" class="menu-item ngx-workshop-logo">
+      <a
+        class="menu-item ngx-workshop-logo"
+        [routerLink]="'/'"
+        (close)="closeSubmenu()"
+      >
         <mat-icon>tips_and_updates</mat-icon>
         <p>Ngx-Workshop</p>
       </a>
@@ -62,7 +66,11 @@ type UserRole = 'admin' | 'publisher' | 'regular' | 'none';
         <p>{{ menuItem.menuItemText }}</p>
       </a>
       } @else {
-      <a class="menu-item" [routerLink]="['/', menuItem.routeUrl]">
+      <a
+        class="menu-item"
+        [routerLink]="['/', menuItem.routeUrl]"
+        (close)="closeSubmenu()"
+      >
         <ngx-menu-devicon
           [icon]="menuItem.navSvgPath"
           [large]="true"
