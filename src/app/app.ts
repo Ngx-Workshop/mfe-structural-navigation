@@ -5,6 +5,7 @@ import {
   DOCUMENT,
   inject,
   Input,
+  signal,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -24,6 +25,7 @@ import {
   tap,
 } from 'rxjs';
 import { MenuDeviconComponent } from './devicon.component';
+import { SubMenuComponent } from './sub-menu.component';
 
 type UserRole = 'admin' | 'publisher' | 'regular' | 'none';
 
@@ -36,9 +38,15 @@ type UserRole = 'admin' | 'publisher' | 'regular' | 'none';
     RouterModule,
     NgxThemePicker,
     MenuDeviconComponent,
+    SubMenuComponent,
   ],
   template: `
     @if(viewModel$ | async; as vm) { @if(vm.mode != 'disabled') {
+    <ngx-sub-menu
+      [parentMenuItem]="activeParentMenuItem()"
+      [isOpen]="isSubMenuOpen()"
+      (close)="closeSubmenu()"
+    />
     <nav class="navbar-header">
       <a [routerLink]="'/'" class="menu-item ngx-workshop-logo">
         <mat-icon>tips_and_updates</mat-icon>
@@ -85,6 +93,7 @@ type UserRole = 'admin' | 'publisher' | 'regular' | 'none';
         block-size: 100dvh;
         position: relative;
         .navbar-header {
+          position: relative;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -131,6 +140,10 @@ export class App {
     NgxNavigationalListService
   );
 
+  // Submenu state using signals
+  isSubMenuOpen = signal(false);
+  activeParentMenuItem = signal<HierarchicalMenuItem | null>(null);
+
   @Input()
   set mode(value: StructuralOverrideMode) {
     this.mode$.next(value);
@@ -161,7 +174,12 @@ export class App {
   );
 
   openSubmenu(menuItem: HierarchicalMenuItem): void {
-    console.log('Open submenu for', menuItem);
+    this.activeParentMenuItem.set(menuItem);
+    this.isSubMenuOpen.set(true);
+  }
+
+  closeSubmenu(): void {
+    this.isSubMenuOpen.set(false);
   }
 
   redirectToLogin(): void {
