@@ -51,7 +51,7 @@ type UserRole = 'admin' | 'publisher' | 'regular' | 'none';
       <a
         class="menu-item ngx-workshop-logo"
         [routerLink]="'/'"
-        (close)="closeSubmenu()"
+        (click)="closeSubmenu()"
       >
         <mat-icon>tips_and_updates</mat-icon>
         <p>Ngx-Workshop</p>
@@ -69,7 +69,7 @@ type UserRole = 'admin' | 'publisher' | 'regular' | 'none';
       <a
         class="menu-item"
         [routerLink]="['/', menuItem.routeUrl]"
-        (close)="closeSubmenu()"
+        (click)="closeSubmenu()"
       >
         <ngx-menu-devicon
           [icon]="menuItem.navSvgPath"
