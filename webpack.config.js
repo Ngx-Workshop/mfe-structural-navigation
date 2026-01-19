@@ -42,12 +42,12 @@ module.exports = withModuleFederationPlugin({
     '@angular/cdk': {
       singleton: true,
       strictVersion: true,
-      requiredVersion: '20.1.0',
+      requiredVersion: '21.1.0',
     },
     '@angular/material': {
       singleton: true,
       strictVersion: true,
-      requiredVersion: '20.1.0',
+      requiredVersion: '21.1.0',
     },
 
     // RxJS + tslib
