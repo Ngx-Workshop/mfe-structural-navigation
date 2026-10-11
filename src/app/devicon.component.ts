@@ -15,11 +15,7 @@ export class IsDeviconPipe implements PipeTransform {
     @if (icon | isDevicon) {
     <i [class]="icon" [class.large]="large"></i>
     } @else {
-    <mat-icon
-      fontSet="material-symbols-outlined"
-      [class.large]="large"
-      >{{ icon }}</mat-icon
-    >
+    <mat-icon [class.large]="large">{{ icon }}</mat-icon>
     }
   `,
   styles: [
