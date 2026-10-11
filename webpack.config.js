@@ -41,12 +41,6 @@ module.exports = withModuleFederationPlugin({
     },
 
     // If you use Material/CDK, share them too
-    '@angular/cdk': {
-      singleton: true,
-      strictVersion: true,
-      requiredVersion: '21.1.0',
-      includeSecondaries: true,
-    },
     '@angular/material': {
       singleton: true,
       strictVersion: true,
