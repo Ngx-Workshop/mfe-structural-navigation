@@ -16,13 +16,11 @@ module.exports = withModuleFederationPlugin({
       singleton: true,
       strictVersion: true,
       requiredVersion: '21.1.0',
-      includeSecondaries: true,
     },
     '@angular/common': {
       singleton: true,
       strictVersion: true,
       requiredVersion: '21.1.0',
-      includeSecondaries: true,
     },
     '@angular/router': {
       singleton: true,
