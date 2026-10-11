@@ -1,4 +1,5 @@
 const {
+  share,
   withModuleFederationPlugin,
 } = require('@angular-architects/module-federation/webpack');
 
@@ -41,12 +42,20 @@ module.exports = withModuleFederationPlugin({
     },
 
     // If you use Material/CDK, share them too
-    '@angular/material': {
-      singleton: true,
-      strictVersion: true,
-      requiredVersion: '21.1.0',
-      includeSecondaries: true,
-    },
+    ...share({
+      '@angular/cdk': {
+        singleton: true,
+        strictVersion: true,
+        requiredVersion: '21.1.0',
+        includeSecondaries: true,
+      },
+      '@angular/material': {
+        singleton: true,
+        strictVersion: true,
+        requiredVersion: '21.1.0',
+        includeSecondaries: true,
+      },
+    }),
 
     // RxJS + tslib
     rxjs: {
