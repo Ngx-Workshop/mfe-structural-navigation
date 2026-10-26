@@ -71,3 +71,25 @@ Federated CSS is supplied by the shells: root Ngx tokens and button styles, plus
 Validation: production build and ChromeHeadless component tests. Browser review uses representative local menu data at 320, 390, 720, 1024 and 1440px across all three enabled modes; it is not a backend or deployed-service integration test.
 
 Verified on 2026-10-26: all 45 mode/viewport combinations fit without horizontal overflow. Header and rail keyboard submenu focus/escape, route highlighting, mobile disclosure, guest sign-in visibility and palette selection passed. Desktop/mobile accessibility scans found no serious or critical violations.
+
+## Federation production regression check
+
+Webpack is pinned to 5.105.2 to include the [missing export generation fix](https://github.com/webpack/webpack/pull/20346).
+With 5.104.1, production bundles can omit RxJS exports and fail with
+`Class extends value undefined`; another remote consuming the failed shared
+Material module can then report `Cannot access ... before initialization`.
+
+After building, run `npm run test:federation`. This evaluates the emitted
+`./Component` factory and its compiled Angular definition using fallback
+shared dependencies. The deployment workflow runs this check before uploading.
+It checks module evaluation, not browser rendering.
+
+To check header and navigation together, build both projects, then run from
+this project:
+
+```bash
+node testing/build/check-federation.cjs ../mfe-structural-header/dist/mfe-structural-header ../mfe-structural-navigation/dist/mfe-structural-navigation
+```
+
+This also loads both components concurrently with a shared scope in both
+provider registration orders.
