@@ -1,0 +1,200 @@
+// Layout belongs to the remote; shared colors and controls belong to the design system.
+:host {
+  display: block;
+  min-inline-size: 0;
+}
+:host([data-mode='disabled']) {
+  display: none;
+}
+.structural-nav {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--ngx-color-canvas);
+  color: var(--ngx-color-text);
+  border-color: var(--ngx-color-border);
+  border-style: solid;
+  border-width: 0;
+  font-family: var(--ngx-font-mono);
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  min-block-size: 44px;
+  color: var(--ngx-color-primary);
+  text-decoration: none;
+}
+.brand > mat-icon {
+  inline-size: 32px;
+  block-size: 32px;
+  font-size: 32px;
+}
+.brand-copy {
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+}
+.brand-copy > span {
+  display: block;
+  color: var(--ngx-color-muted);
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+}
+.links {
+  display: flex;
+  gap: 0.5rem;
+  min-inline-size: 0;
+}
+.section-label {
+  color: var(--ngx-color-muted);
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.structural-nav .nav-item {
+  min-block-size: 48px;
+  color: var(--ngx-color-text);
+}
+.structural-nav .nav-item:hover,
+.structural-nav .nav-item.is-active {
+  color: var(--ngx-color-primary);
+  background: var(--ngx-color-surface);
+}
+.structural-nav .nav-item.is-active {
+  box-shadow: inset 3px 0 var(--ngx-color-primary);
+}
+.utilities {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.sign-in {
+  min-height: 44px;
+  padding-inline: 20px;
+  font-size: 0.75rem;
+}
+.mobile-toggle {
+  display: none;
+  color: var(--ngx-color-primary);
+}
+:focus-visible {
+  outline: 2px solid var(--ngx-color-primary);
+  outline-offset: 3px;
+}
+
+:host {
+  inline-size: var(--ngx-rail-width, 176px);
+}
+.structural-nav {
+  flex-direction: column;
+  min-block-size: 100dvh;
+  block-size: 100dvh;
+  overflow-y: auto;
+  border-inline-end-width: 1px;
+}
+.brand {
+  justify-content: center;
+  padding-block: 0.5rem 1rem;
+  border-block-end: 1px solid var(--ngx-color-border);
+}
+.links {
+  flex-direction: column;
+  flex: 1;
+}
+.section-label {
+  padding: 1rem 0.5rem 0.5rem;
+}
+.structural-nav .nav-item {
+  display: flex;
+  inline-size: 100%;
+  height: auto;
+  padding: 0.875rem 0.5rem;
+  text-align: start;
+}
+.item-label {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  font-size: 0.75rem;
+}
+.expand {
+  margin-inline-start: auto;
+}
+.utilities {
+  margin-block-start: auto;
+  flex-direction: column;
+  padding-block-start: 1rem;
+}
+.structural-nav[data-mode='full'] .nav-item {
+  min-block-size: 80px;
+}
+[data-mode='relaxed'] .brand-copy {
+  font-size: 0.875rem;
+}
+[data-mode='compact'] .brand-copy,
+[data-mode='compact'] .item-label,
+[data-mode='compact'] .expand {
+  display: none;
+}
+.structural-nav[data-mode='compact'] .nav-item {
+  justify-content: center;
+  padding: 0.75rem 0;
+}
+[data-mode='compact'] .sign-in {
+  padding-inline: 10px;
+  font-size: 0.625rem;
+}
+@media (max-width: 720px) {
+  :host {
+    inline-size: 100%;
+  }
+  .structural-nav {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    block-size: auto;
+    min-block-size: 64px;
+    overflow: visible;
+    padding: 0.5rem 1rem;
+    border-inline-end-width: 0;
+    border-block-end-width: 1px;
+  }
+  .brand {
+    border: 0;
+    padding: 0;
+  }
+  .mobile-toggle {
+    display: inline-flex;
+    margin-inline-start: auto;
+  }
+  .links {
+    display: none;
+    flex-basis: 100%;
+  }
+  .links.mobile-open {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding-block: 0.5rem;
+  }
+  .section-label,
+  .utilities {
+    grid-column: 1 / -1;
+  }
+  .utilities {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  [data-mode] .brand-copy,
+  [data-mode] .item-label {
+    display: block;
+  }
+  .structural-nav[data-mode] .nav-item {
+    min-block-size: 48px;
+    justify-content: flex-start;
+  }
+  [data-mode='compact'] .sign-in {
+    padding-inline: 20px;
+    font-size: 0.75rem;
+  }
+}

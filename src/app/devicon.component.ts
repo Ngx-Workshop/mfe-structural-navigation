@@ -10,17 +10,21 @@ export class IsDeviconPipe implements PipeTransform {
 
 @Component({
   selector: 'ngx-menu-devicon',
+  host: { 'aria-hidden': 'true' },
   imports: [IsDeviconPipe, MatIcon],
   template: `
     @if (icon | isDevicon) {
-    <i [class]="icon" [class.large]="large"></i>
+      <i [class]="icon" [class.large]="large"></i>
     } @else {
-    <mat-icon [class.large]="large">{{ icon }}</mat-icon>
+      <mat-icon [class.large]="large">{{ icon }}</mat-icon>
     }
   `,
   styles: [
     `
       :host {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         i,
         mat-icon {
           font-size: 1.6rem;

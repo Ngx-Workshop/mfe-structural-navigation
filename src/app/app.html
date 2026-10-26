@@ -1,0 +1,119 @@
+@if (viewModel$ | async; as vm) {
+  @if (vm.mode !== 'disabled') {
+    <nav
+      class="structural-nav"
+      [attr.data-mode]="vm.mode"
+      aria-label="Workshop navigation"
+      (keydown.escape)="onEscape($event)"
+    >
+      <a class="brand" routerLink="/" aria-label="Ngx Workshop home" (click)="closeNavigation()">
+        <mat-icon aria-hidden="true">tips_and_updates</mat-icon>
+        <span class="brand-copy">NGX <span>WORKSHOP</span></span>
+      </a>
+      <button
+        mat-icon-button
+        class="mobile-toggle"
+        aria-label="Toggle workshop navigation"
+        [attr.aria-expanded]="mobileOpen()"
+        aria-controls="navigation-links"
+        (click)="mobileOpen.set(!mobileOpen())"
+      >
+        <mat-icon>{{ mobileOpen() ? 'close' : 'menu' }}</mat-icon>
+      </button>
+      <div class="links" id="navigation-links" [class.mobile-open]="mobileOpen()">
+        @if (vm.mode === 'full') {
+          <span class="section-label">Explore / learn</span>
+        }
+        @for (item of vm.menuItems; track $index) {
+          @if (item.children.length) {
+            <button
+              mat-button
+              class="nav-item"
+              [matMenuTriggerFor]="children"
+              [attr.aria-label]="item.menuItemText"
+              [title]="item.menuItemText"
+            >
+              <ngx-menu-devicon matButtonIcon [icon]="item.navSvgPath" /><span class="item-label">{{
+                item.menuItemText
+              }}</span
+              ><mat-icon iconPositionEnd class="expand">expand_more</mat-icon>
+            </button>
+            <mat-menu #children="matMenu" class="ngx-design-system-overlay">
+              @for (child of item.children; track $index) {
+                <a
+                  mat-menu-item
+                  [routerLink]="['/', child.routeUrl]"
+                  routerLinkActive="current-menu-item"
+                  ariaCurrentWhenActive="page"
+                  (click)="closeNavigation()"
+                >
+                  <ngx-menu-devicon [icon]="child.navSvgPath" /><span>{{
+                    child.menuItemText
+                  }}</span>
+                </a>
+              }
+            </mat-menu>
+          } @else {
+            <a
+              mat-button
+              class="nav-item"
+              [routerLink]="['/', item.routeUrl]"
+              routerLinkActive="is-active"
+              ariaCurrentWhenActive="page"
+              [attr.aria-label]="item.menuItemText"
+              [title]="item.menuItemText"
+              (click)="closeNavigation()"
+            >
+              <ngx-menu-devicon matButtonIcon [icon]="item.navSvgPath" /><span class="item-label">{{
+                item.menuItemText
+              }}</span>
+            </a>
+          }
+        }
+        <div class="utilities">
+          <button mat-icon-button aria-label="Choose theme" [matMenuTriggerFor]="paletteMenu">
+            <mat-icon>palette</mat-icon>
+          </button>
+          <mat-menu #paletteMenu="matMenu" class="ngx-design-system-overlay">
+            <button
+              mat-menu-item
+              role="menuitemcheckbox"
+              [attr.aria-checked]="palette.darkMode()"
+              (click)="palette.darkMode.set(!palette.darkMode())"
+            >
+              <mat-icon>{{ palette.darkMode() ? 'dark_mode' : 'light_mode' }}</mat-icon
+              >Dark mode
+            </button>
+            @for (theme of themes; track theme.name) {
+              <button
+                mat-menu-item
+                role="menuitemradio"
+                [attr.aria-checked]="theme.name === palette.currentTheme()"
+                (click)="palette.userSelectedTheme.set(theme.name)"
+              >
+                <mat-icon>{{
+                  theme.name === palette.currentTheme()
+                    ? 'radio_button_checked'
+                    : 'radio_button_unchecked'
+                }}</mat-icon>
+                {{ theme.displayName }}
+              </button>
+            }
+          </mat-menu>
+          @if (vm.role === 'none') {
+            <button
+              mat-flat-button
+              ngxButton
+              shape="beveled"
+              surface="outline"
+              class="sign-in"
+              (click)="redirectToLogin()"
+            >
+              Sign in
+            </button>
+          }
+        </div>
+      </div>
+    </nav>
+  }
+}

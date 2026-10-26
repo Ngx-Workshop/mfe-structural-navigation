@@ -1,1 +1,4 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@tmdjr/ngx-workshop-design-system/theme' as ngx;
+// Standalone preview only. Federated hosts supply document styles.
+@include ngx.theme();
+.ngx-design-system-overlay { @include ngx.material-adapter(); }
