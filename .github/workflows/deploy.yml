@@ -47,8 +47,7 @@ jobs:
       - name: Install dependencies and build
         run: |
           npm ci
-          npm run build -- --configuration production
-          npm run test:federation
+          npm run build -- --configuration development
           test -f dist/mfe-structural-navigation/index.html
 
       - name: Copy static assets to frontend

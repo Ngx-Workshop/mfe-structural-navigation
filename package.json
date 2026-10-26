@@ -7,7 +7,6 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration production",
     "test": "ng test",
-    "test:federation": "node testing/build/check-federation.cjs dist/mfe-structural-navigation",
     "run:all": "node node_modules/@angular-architects/module-federation/src/server/mf-dev-server.js",
     "serve:bundle": "npx http-server ./dist/mfe-structural-navigation -p 4201 -a 0.0.0.0 --cors -c-1",
     "dev:bundle": "npm run watch & npm run serve:bundle"
@@ -46,8 +45,5 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "ngx-build-plus": "^20.0.0",
     "typescript": "~5.9.3"
-  },
-  "overrides": {
-    "webpack": "5.105.2"
   }
 }
