@@ -72,10 +72,16 @@ module.exports = withModuleFederationPlugin({
     },
 
     // Theming
+    '@tmdjr/ngx-workshop-design-system': {
+      singleton: true,
+      strictVersion: true,
+      requiredVersion: '21.0.7',
+    },
+
     '@tmdjr/ngx-theme-picker': {
       singleton: true,
       strictVersion: true,
-      requiredVersion: '21.0.5',
+      requiredVersion: '21.0.6',
     },
 
     '@tmdjr/ngx-navigational-list': {
