@@ -16,20 +16,20 @@ describe('Structural navigation', () => {
           {
             menuItemText: `${mode} home`,
             routeUrl: 'home',
-            navSvgPath: 'home',
-            headerSvgPath: 'home',
+            navSvgPath: '/assets/home.svg',
+            headerSvgPath: '/assets/home.svg',
             children: [],
           },
           {
             menuItemText: `${mode} resources`,
-            navSvgPath: 'school',
-            headerSvgPath: 'school',
+            navSvgPath: 'devicon-angular-plain colored',
+            headerSvgPath: 'devicon-angular-plain colored',
             children: [
               {
                 menuItemText: `${mode} workshops`,
                 routeUrl: 'workshops',
-                navSvgPath: 'science',
-                headerSvgPath: 'science',
+                navSvgPath: 'https://cdn.example.com/science.png',
+                headerSvgPath: 'https://cdn.example.com/science.png',
                 children: [],
               },
             ],
@@ -101,10 +101,13 @@ describe('Structural navigation', () => {
     await fixture.whenStable();
     const trigger = fixture.nativeElement.querySelector('button.nav-item') as HTMLButtonElement;
     expect(trigger).not.toBeNull();
+    expect(trigger.querySelector('i.devicon-angular-plain')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('a.nav-item img')?.getAttribute('src')).toBe('/assets/home.svg');
     trigger.click();
     fixture.detectChanges();
     await fixture.whenStable();
     expect(document.querySelector('[role="menu"]')?.textContent).toContain('FULL workshops');
+    expect(document.querySelector('[role="menu"] img')?.getAttribute('src')).toBe('https://cdn.example.com/science.png');
     fixture.componentRef.setInput('mode', 'compact');
     fixture.detectChanges();
     await fixture.whenStable();
